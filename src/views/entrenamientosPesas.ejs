@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-entrenamientos.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h1>Entrenamientos</h1>
+        </div>
+        <section class="container">
+            <h2>Planes de entrenamineto</h2>
+            <section class="tarjetas">
+              
+                <!-- baja de peso -->
+                <a href="/bajarPeso" class="tarjeta">
+                    <img src="./assets/bajar-peso.png" alt="nutrición">
+                    <h3>Bajar de peso</h3>
+                </a>
+                <!-- aumento de masa muscular -->
+                <a href="/aumentosMasa" class="tarjeta masaMuscular">
+                    <img src="./assets/aumento.png" alt="">
+                    <h3>Aumento de masa muscular</h3>
+                </a>
+                <!-- personalizado -->
+                <a href="/personalizado" class="tarjeta dTarjeta">
+                    <img src="./assets/coach.png" alt="entrenador">
+                    <h3>Personalizado con el entrenador</h3>
+                </a>
+
+            </section>
+
+          
+        </section>
+        <figure class="logo">
+            <img src="./assets/GYM SPORTS.png" alt="">
+        </figure>
+        <%- include("partials/footer.ejs")%>
+    </main>
+</body>
+</html>

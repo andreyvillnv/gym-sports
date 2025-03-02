@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-perfil.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h1>Perfil</h1>
+        </div>
+        <section class="container">
+            <section class="section-datos-persolanes">
+                <div class="datos-personales">
+                    <p>Nombre: <%-nombre%> </p>
+                    <p>Fecha de nacimento: <%-fecha%>  </p>
+                    <p>Estatura: <%-estatura%></p>
+                    <p>Peso: <%-peso%></p>
+                </div>
+                <div class="foto-perfil">
+                    <img src="" alt="foto perfil">
+                </div>
+            </section>
+
+            <section class="rutinas">
+                <p>Rutina actual</p>
+                <div class="botones">
+                    <a  class="btnCambiar" href="">Cambiar</a>
+                    <a class="btneliminar" href="">Eliminar</a>
+                </div>
+            </section>
+        
+
+            <section class="citas-nutricion">
+                <div>
+                    <p>Proxima cita con nutrición: </p>
+                    <p><%-citaNutri%></p>
+                </div>
+       
+                <div class="botones">
+                    <a href="/cambiarCitaNutri"  class="btnCambiar" href="">Cambiar</a>
+                    <a class="btneliminar" href="">Eliminar</a>
+                </div>     
+
+            </section>
+
+            <section class="citas-fisio">
+                <div>
+                    <p>Proxima cita con fisioterapia: </p>
+
+                </div>
+              
+                <div class="botones">
+                    <a class="btnCambiar" href="">Cambiar</a>
+                    <a class="btneliminar" href="">Eliminar</a>
+                </div>
+
+            </section>
+
+  
+
+        </section>
+        <figure class="logo">
+            <img src="./assets/GYM SPORTS.png" alt="">
+        </figure>
+
+        <%- include("partials/footer")%>
+    </main>
+</body>
+</html>

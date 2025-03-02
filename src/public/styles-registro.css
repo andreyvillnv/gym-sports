@@ -1,0 +1,120 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+}
+.error {
+    color: #E31C25;
+    font-size: 14px;
+}
+.valid {
+    color: green;
+    font-size: 14px;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    height: 474px;
+    width: 323px;
+    border: 1px, solid, #757575;
+    border-radius: 8px;
+    padding: 24px;
+}
+input{
+    border-radius: 8px;
+    border: none;
+    height: 24px;
+}
+a{
+    margin-top: 12px; 
+    text-decoration: none;
+    color:white;
+}
+a:focus{
+    color:#E31C25
+}
+input:focus {
+    outline: none;
+    border: none; /* Opcional: también quita el borde si lo tiene */
+    box-shadow: none; /* Opcional: elimina cualquier sombra */
+}
+label{
+    font-size: 16px;
+    margin-bottom: 2px;
+    color:rgb(158, 142, 142);
+}
+
+.boton-registrar{
+    background-color: #E31C25;
+    margin-top: 12px; 
+    border: none;
+    border-radius: 8px;
+    height: 34px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+  .password-container {
+    position: relative;
+  
+  }
+  
+  #password {
+    width: 100%;
+    padding-right: 40px; /* Espacio para el ícono */
+  }
+  
+  #toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 75%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666; /* Color del ícono */
+  }
+  
+  #toggle-password i {
+    font-size: 18px; /* Tamaño del ícono */
+  }
+
+    
+  #confirmPasswordRepit {
+    width: 100%;
+    padding-right: 40px; /* Espacio para el ícono */
+  }
+
+  #toggle-password-repit {
+    position: absolute;
+    right: 10px;
+    top: 75%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #666; /* Color del ícono */
+  }
+.datos{
+    display: flex;
+
+}
+
+.datos select{
+    border-radius: 8px;
+    border:none;
+    height: 24px;
+}
+
+.datos select:focus {
+    outline: none;
+    border: none; /* Opcional: también quita el borde si lo tiene */
+    box-shadow: none; /* Opcional: elimina cualquier sombra */
+}
+
+.altura input{
+    width: 50px;
+}
+
+.peso input{
+    width: 50px;
+}

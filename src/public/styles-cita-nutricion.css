@@ -1,0 +1,41 @@
+.tarjeta a{
+    text-decoration: none;
+    width: 150px;
+    height: 35px;
+    background-color: #E31C25;
+    text-align: center;
+    padding: 8px;
+    margin-top: 14px;
+    color: #ffffff;
+    border-radius: 8px;
+}
+
+.tarjeta{ 
+    margin-top: 100px;
+    margin-bottom: 100px;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 300px;
+    height: 196px;
+    background-color: #ffffff;
+}
+.tarjeta p{
+    margin-top: 14px;
+}
+.container{
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+.logo{
+    margin-top: 100px;
+}
+footer{
+    margin-top: 500px;
+}

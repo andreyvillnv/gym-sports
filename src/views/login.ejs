@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-login.css">
+
+  
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h1>Inicio de sesión</h1>
+        </div>
+        <section class="container">
+
+            <form id="loginForm" action="/login" method="post">
+                <label for="correo">Ingresa el correo</label>
+                <input type="email" id="correo" name="correo">
+
+                <label for="pass">Ingresa la contraseña</label>
+                <input type="password" id="pass" name="pass">
+                <a href="/cambioContrasena">¿Olvidó su contraseña?</a>
+                <input class="boton-iniciar" type="submit" value="Iniciar">
+                <a href="/registro">Registrarse</a>
+            </form>
+
+       </section>
+        <figure class="logo">
+            <img src="./assets/GYM SPORTS.png" alt="">
+        </figure>
+
+  
+    </main>
+
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            <p>Correo o contraseña incorrectos. Inténtalo de nuevo.</p>
+        </div>
+    </div>
+
+    <script>
+        // Pasar la variable de EJS a JavaScript
+        let error = "<%= error ? error : '' %>";
+
+        // Mostrar el modal si hay un error
+        if (error.trim() !== "") {
+            document.getElementById("errorModal").style.display = "block";
+        }
+
+        // Función para cerrar el modal
+        function cerrarModal() {
+            document.getElementById("errorModal").style.display = "none";
+        }
+
+        // Cerrar el modal si se hace clic fuera de él
+        window.onclick = function(event) {
+            let modal = document.getElementById("errorModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+
+    
+</body>
+</html>

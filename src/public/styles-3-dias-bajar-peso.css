@@ -1,0 +1,59 @@
+main{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background-image: url(./assets/fitness\ portada.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+ 
+}
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background-image: url(./assets/fitness\ portada.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+form{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.container {
+    max-width: 800px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.514);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1{
+    color: #E31C25;
+}
+h2 {
+    color: #a32b31;
+}
+ul {
+    list-style: none;
+    padding: 0;
+}
+li {
+    background: #ddd;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+input{
+    border: none;
+    margin-top: 24px;
+    border-radius: 8px;
+    padding: 14px;
+    background-color: #E31C25;
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+}

@@ -1,0 +1,75 @@
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+}
+.section-datos-persolanes, .citas-fisio, .rutinas, .citas-nutricion{
+    display: flex;
+    align-items: center;
+    width: 395px;
+    height: 125px;
+    background-color: white;
+    border-radius: 8px;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+.datos-personales, .citas-nutricion p, .citas-fisio p, .rutinas p {
+    margin-left: 14px;
+}
+.fotoperfil{
+    padding-right: 14px;
+    width: 335px;
+    height: 105px;
+    background-color: rgb(180, 93, 93);
+}
+
+.botones{
+    display: flex;
+    flex-direction: column;
+    margin-right: 44px;
+
+}
+.botones a{
+    text-decoration: none;
+    text-align: center;
+    width: 74px;
+    height: 32px;
+    background-color:  white;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    
+    padding: auto;
+}
+
+.btnCambiar{
+    border: 2px, solid, #17a14ce5;
+    color: #17a14ce5;
+    font-weight: bold;
+}
+.btneliminar{
+    border: 2px, solid, #E31C25;
+    color: #E31C25;
+    font-weight: bold;
+}
+
+.btneliminar:hover{
+    border: 2px, solid, #E31C25;
+    color: white;
+    font-weight: bold;
+    background-color: #E31C25;
+}
+
+.btnCambiar:hover{
+    border: 2px, solid, #17a14ce5;
+    color: white;
+    font-weight: bold;
+    background-color:#17a14ce5;
+}
+
+.logo{
+    margin-top: -34px;
+}
+

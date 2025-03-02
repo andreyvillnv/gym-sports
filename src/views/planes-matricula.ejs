@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-matricula.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h1>Planes matrícula</h1>
+        </div>
+        <section class="container cTarjetas">
+            <section class="tarjetas">
+                <div  class="tarjeta">
+                    <div class="tipoMatricula">
+                        <img src="./assets/gente.png" alt="matricula">
+                        <h3>Individual</h3>
+                    </div>
+
+                    <div class="costos">
+                        <a href="">Mensual: ₡18 000</a>
+                        <a href="">Trimestral: ₡49 500</a>
+                        <a href="">Anual: ₡180 000</a>
+                    </div>
+                </div>
+
+                <div class="tarjeta">
+                    <div class="tipoMatricula">
+                        <img src="./assets/pareja.png" alt="nutrición">
+                        <h3>Parejas</h3>
+                    </div>
+
+                    <div class="costos">
+                        <a href="">Mensual: ₡32 000</a>
+                        <a href="">Trimestral: ₡90 000</a>
+                        <a href="">Anual: ₡324 000</a>
+                    </div>
+                </div>
+
+                <div class="tarjeta dTarjeta">
+                    <div class="tipoMatricula">
+                        <img src="./assets/personas.png" alt="">
+                        <h3>Familiar 4 personas</h3>
+                    </div>
+
+                    <div class="costos">
+                        <a href="">Mensual: ₡58 000</a>
+                        <a href="">Trimestral: ₡162 000</a>
+                        <a href="">Anual: ₡576 000</a>
+                    </div>
+                </div>
+            </section>
+        </section>
+         
+        <figure class="logo">
+            <img src="./assets/GYM SPORTS.png" alt="">
+        </figure>
+
+        <%- include("partials/footer.ejs")%>
+    </main>
+</body>
+</html>

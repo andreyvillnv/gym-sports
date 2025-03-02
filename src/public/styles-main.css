@@ -1,0 +1,44 @@
+
+.tarjeta{ 
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 157px;
+    height: 196px;
+    background-color: #ffffff;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.tarjeta img{
+    width: 110px;
+    height: 110px;
+    
+}
+.tarjeta h3{
+    color:#E31C25;
+    text-align: center;
+}
+
+.tarjetas{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px;
+}
+
+.tarjetas a{
+    text-decoration: none;
+}
+
+
+.cTarjetas{
+    margin-top: 150px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-content: center;
+}
+

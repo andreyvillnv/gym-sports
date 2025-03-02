@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-nutricion.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h1>Nutrición</h1>
+        </div>
+        <section class="container">
+            <form class="nutricion" action="citaNutricion" method="get">
+                <h2>Agenda tu cita con la nutricionista</h2>
+    
+                <h3>Costo de la cita ₡10 000</h3>
+                <label for="fecha">Seleciona la fecha para la cita</label>
+                <input id= "fecha"type="date" name="fecha" class="fecha" required>
+    
+                <label for="hora">Seleciona la hora para la cita</label>
+                <input id= "hora"type="time" name="hora" class="hora" required >
+
+                <label for="descripcion">Añade una breve descripción</label>
+                <input id="descripcion" type="text" name="descripcion" class="descripcion">
+
+                <label for="numtarjeta">Número de tarjeta</label>
+                <input type="text" id="numtarjeta">
+
+                <label for="nombre-tarjeta">Nombre del titular</label>
+                <input type="text" id="nombre-tarjeta">
+
+                <label for="fechaVen">Fecha de Vencimiento</label>
+                <input type="date" id="fechaVen" class="fecha" >
+                
+    
+                <input type="submit" name="" id="" value="Pagar y agendar cita" class="boton-cita">
+
+                <figure class="logo">
+                    <img src="./assets/GYM SPORTS.png" alt="">
+                </figure>
+    
+            </form>
+        </section>
+
+
+        <%- include("partials/footer.ejs")%>
+    </main>
+</body>
+</html>

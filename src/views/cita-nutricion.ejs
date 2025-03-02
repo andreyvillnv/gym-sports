@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-cita-nutricion.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h1>Nutrición</h1>
+        </div>
+        <section class="container">
+
+            <h2>Cita agendada con exito</h2>
+            <section class="tarjeta">
+                <p>Fecha de la cita: <%-fecha%></p>
+                <p>Hora: <%-hora%></p>
+                <a href="/home">Volver al inicio</a>
+                <figure class="logo">
+                    <img src="./assets/GYM SPORTS.png" alt="">
+                </figure>
+            </section>
+
+        </section>
+
+
+        <%- include("partials/footer.ejs")%>
+    </main>
+</body>
+</html>

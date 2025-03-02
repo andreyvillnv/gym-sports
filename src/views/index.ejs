@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-main.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h1>Menú principal</h1>
+        </div>
+        <section class="container cTarjetas">
+            <section class="tarjetas">
+                <a href="/matricula" class="tarjeta">
+                    <img src="./assets/matricula.png" alt="matricula">
+                    <h3>Planes de mátricula</h3>
+                </a>
+
+                <a href="/nutricion" class="tarjeta">
+                    <img src="./assets/nutricion.png" alt="nutrición">
+                    <h3>Planes de nutrición</h3>
+                </a>
+                <a href="/fisioterapia" class="tarjeta dTarjeta">
+                    <img src="./assets/icons8-fisioterapia-96.png" alt="">
+                    <h3>Fisioterapea</h3>
+                </a>
+            </section>
+
+            <section class="tarjetas">
+                <a href="/nutricion" class="tarjeta">
+                    <img src="./assets/ayuda.png" alt="acerca de">
+                    <h3>Acerca de</h3>
+                </a>
+                <a href="/entrenamientosPesas" class="tarjeta">
+                    <img src="./assets/icons8-barra-con-pesas-100.png" alt="">
+                    <h3>Entrenamientos de pesas</h3>
+                </a>
+                <a href="./" class="tarjeta dTarjeta">
+                    <img src="./assets/entrenador.png" alt="">
+                    <h3>Otros entrenamientos</h3>
+                </a>
+            </section>
+        </section>
+        <figure class="logo">
+            <img src="./assets/GYM SPORTS.png" alt="">
+        </figure>
+        <%- include("partials/footer.ejs")%>
+    </main>
+</body>
+</html>

@@ -1,0 +1,69 @@
+form{
+    display: flex;
+    flex-direction: column;
+    height: 624px;
+    width: 323px;
+    border: 1px, solid, #757575;
+    border-radius: 8px;
+    padding: 24px;
+}
+.nutricion h2{
+    margin-bottom: 4px;
+}
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+input{
+    border-radius: 8px;
+    border: none;
+}
+label{
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+input:focus {
+    outline: none;
+    border: none; /* Opcional: también quita el borde si lo tiene */
+    box-shadow: none; /* Opcional: elimina cualquier sombra */
+}
+.fecha{
+    height: 48px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 2px;
+}
+
+.hora{
+    height: 48px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 4px;
+}
+
+.descripcion{
+    height: 126px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 2px; 
+}    
+
+.boton-cita{
+    background-color: #E31C25;
+    margin-top: 2px; 
+    border: none;
+    border-radius: 8px;
+    height: 54px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+}
+
+.logo img{
+   
+    width: 100px;
+}
