@@ -199,3 +199,27 @@ export async function agregarIntentos(dataIntentos) {
     }
     
 }
+
+
+export async function verificarGoogleAut(id) {
+    try {
+        const connect = await abrirConexion()
+        const [estado] = await connect.query("select estado from googleaut where idcliente = ?", [id])
+        return estado[0]
+        await connect.end()
+    } catch (error) {
+        console.log("Error en verificarGoogleAut", error)
+    }
+    
+}
+
+export async function codigoGoogleAut(id, codigo) {
+    try {
+        const connect = await abrirConexion()
+        await connect.query("insert into  googleaut (idcliente, googleAuthen, estado) values (?, ?, ?)", [id, codigo, true])     
+        await connect.end()
+    } catch (error) {
+        console.log("Error en codigoGoogleAut", error)
+    }
+    
+}

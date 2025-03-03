@@ -1,9 +1,11 @@
 import { query, Router } from "express";
 import session from 'express-session';
 import {cifrar, descifrar} from '../cifrado.js'
-import { citaNutricion,idUsuario, agregarRutina, perfil, dataPerfil, citaFisio, citaPerfilNutricion, cambioCitaNutricion, nuevoRegistro, credencilales, intentos, agregarIntentos, bloqueoCuenta} from "../querys-sql.js";
+import {codigoGoogleAut, verificarGoogleAut, citaNutricion,idUsuario, agregarRutina, perfil, dataPerfil, citaFisio, citaPerfilNutricion, cambioCitaNutricion, nuevoRegistro, credencilales, intentos, agregarIntentos, bloqueoCuenta} from "../querys-sql.js";
 import { usuarioID } from "../id-usuario.js";
 import { verificarAutenticacion } from "../authMiddleware.js";
+import speakeasy from 'speakeasy'
+
 const router = Router();
 
 
@@ -77,8 +79,17 @@ router.post('/login', async (req, res) => {
             console.log("id user= ",id_usuario)            
             await intentos(data.correo)
             req.session.usuario = id_usuario.idcliente
-            res.render('index.ejs');  
-            return            
+            const estado = await verificarGoogleAut(id_usuario.idcliente)
+            console.log("google ", estado)
+            if(estado){
+                res.render('ingreso-2fa.ejs',{error: ''})
+                return
+               // console.log("entrando")
+            }else{
+                res.render('index.ejs');  
+                return  
+            }
+          
         } else {
             //const intentos =0
             if(cliente[0].intentos >= 3){
@@ -182,7 +193,8 @@ router.get('/perfil',verificarAutenticacion, async (req, res) => {
             fecha: fechaNac,
             estatura: rows.altura,
             peso: rows.peso,
-            citaNutri: citaNutri  
+            citaNutri: citaNutri,
+            error:''   
         });
 
     } catch (error) {
@@ -191,16 +203,18 @@ router.get('/perfil',verificarAutenticacion, async (req, res) => {
     }
 });
 
-router.get('/cambiarCitaNutri', (req,res)=>{
+
+
+router.get('/cambiarCitaNutri', verificarAutenticacion,(req,res)=>{
     try {
-        res.render('cambiar-cita-nutricion.ejs');
+        res.render('cambiar-cita-nutricion.ejs', { usuario: req.session.usuario });
     } catch (error) {
         
     }
 
 })
 
-router.post('/cambioCitaNutricion', async(req,res)=>{
+router.post('/cambioCitaNutricion', verificarAutenticacion, async(req,res)=>{
     try {
         const data = {
             user: 11111,
@@ -221,27 +235,27 @@ router.post('/cambioCitaNutricion', async(req,res)=>{
         descripcion: req.body.descripcion
       };
    
-    res.render('cita-nutricion.ejs', {fecha : data.fecha, hora: data.hora});
+    res.render('cita-nutricion.ejs', {usuario: req.session.usuario, fecha : data.fecha, hora: data.hora});
 
 })
-router.get('/home', (req, res) => {
-    res.render('index.ejs'); 
+router.get('/home', verificarAutenticacion,(req, res) => {
+    res.render('index.ejs', { usuario: req.session.usuario }); 
 });
 
-router.get('/entrenamientosPesas', (req, res) => {
-    res.render('entrenamientosPesas.ejs'); 
+router.get('/entrenamientosPesas', verificarAutenticacion, (req, res) => {
+    res.render('entrenamientosPesas.ejs', { usuario: req.session.usuario }); 
 });
 
 
-router.get('/bajarPeso', (req, res) => {
-    res.render('bajarPeso.ejs'); 
+router.get('/bajarPeso', verificarAutenticacion,(req, res) => {
+    res.render('bajarPeso.ejs', { usuario: req.session.usuario }); 
 });
 
-router.get('/3-dias-bajarPeso', (req, res) => {
-    res.render('3-dias-bajar-peso.ejs'); 
+router.get('/3-dias-bajarPeso',verificarAutenticacion, (req, res) => {
+    res.render('3-dias-bajar-peso.ejs', { usuario: req.session.usuario }); 
 });
 
-router.post('/citaNutricion',  async(req, res) => {
+router.post('/citaNutricion', verificarAutenticacion,  async(req, res) => {
     try {
         const data = {
             user: 11111,
@@ -261,10 +275,10 @@ router.post('/citaNutricion',  async(req, res) => {
         hora: req.body.hora,
         descripcion: req.body.descripcion
       };
-    res.render('cita-nutricion.ejs', {fecha : data.fecha, hora: data.hora}); 
+    res.render('cita-nutricion.ejs', { usuario: req.session.usuario,fecha : data.fecha, hora: data.hora}); 
 })
 
-router.post('/citaFisio', async (req, res)=>{
+router.post('/citaFisio',verificarAutenticacion, async (req, res)=>{
     try {
         const data = {
             user: 1,
@@ -283,10 +297,10 @@ router.post('/citaFisio', async (req, res)=>{
         hora: req.body.hora,
         descripcion: req.body.descripcion
       };
-    res.render('cita-fisioterapia.ejs', {fecha : data.fecha, hora: data.hora}); 
+    res.render('cita-fisioterapia.ejs', {usuario: req.session.usuario, fecha : data.fecha, hora: data.hora}); 
 })
 
-router.post('rutina-3-bajar-peso', async(req, res,)=>{
+router.post('rutina-3-bajar-peso',verificarAutenticacion, async(req, res,)=>{
     try {
         const data ={
             user:1111,
@@ -299,5 +313,128 @@ router.post('rutina-3-bajar-peso', async(req, res,)=>{
 
 
 })
+
+
+//Google Authenticator
+
+// Ruta para generar el secreto activarGoogleAut
+router.get('/activarGoogleAut', async (req, res) => {
+    try {
+        const estado = await verificarGoogleAut(req.session.usuario)
+        if(estado){
+            const id = req.session.usuario
+            const rows = await dataPerfil(id);  // Obtener datos del perfil
+            const citasNutricion = await citaPerfilNutricion();  // Obtener citas de nutrición
+            
+            console.log(rows);
+            console.log("fecha ",citasNutricion);
+    
+            // if (!rows.length) {
+            //     return res.status(404).send("Perfil no encontrado");
+            // }
+            const fecha = citasNutricion[0].fecha.toISOString().split("T")[0];
+            const fechaNac = rows.fechaNac.toISOString().split("T")[0];
+            const hora = citasNutricion[0].fecha.toTimeString().split(" ")[0];
+            const cita = fecha + ' a las ' + hora 
+            // Si no hay citas de nutrición, asignar un valor vacío o mensaje
+            const citaNutri = citasNutricion.length > 0 ? cita : "Sin cita asignada";
+            
+            res.render('perfil.ejs', {
+                usuario: req.session.usuario,
+                nombre: rows.nombre + ' ' + rows.apellidos,
+                fecha: fechaNac,
+                estatura: rows.altura,
+                peso: rows.peso,
+                citaNutri: citaNutri,
+                error: "La autenticación de Google ya está activada"
+            });
+           
+        }
+        let codigo = null
+        const secret = speakeasy.generateSecret({ length: 20 });
+        codigo = secret.base32; // Guardar el secreto
+        //await codigoGoogleAut(req.session.usuario);
+        
+    
+        res.render('googleAut.ejs', { secret: codigo }); 
+    } catch (error) {
+        
+    }
+    // Enviar el secreto al frontend
+});
+
+
+router.post('/activarSevicioGoogleAut',verificarAutenticacion, async (req, res)=> {
+    try {
+        const { codigo } = req.body;
+       
+        await codigoGoogleAut(req.session.usuario, codigo);
+        console.log("Hecho")
+        const id = req.session.usuario
+        const rows = await dataPerfil(id);  // Obtener datos del perfil
+        const citasNutricion = await citaPerfilNutricion();  // Obtener citas de nutrición
+        
+        console.log(rows);
+        console.log("fecha ",citasNutricion);
+
+        // if (!rows.length) {
+        //     return res.status(404).send("Perfil no encontrado");
+        // }
+        const fecha = citasNutricion[0].fecha.toISOString().split("T")[0];
+        const fechaNac = rows.fechaNac.toISOString().split("T")[0];
+        const hora = citasNutricion[0].fecha.toTimeString().split(" ")[0];
+        const cita = fecha + ' a las ' + hora 
+        // Si no hay citas de nutrición, asignar un valor vacío o mensaje
+        const citaNutri = citasNutricion.length > 0 ? cita : "Sin cita asignada";
+        
+        res.render('perfil.ejs', {
+            usuario: req.session.usuario,
+            nombre: rows.nombre + ' ' + rows.apellidos,
+            fecha: fechaNac,
+            estatura: rows.altura,
+            peso: rows.peso,
+            citaNutri: citaNutri,
+            error:'' 
+        });
+        
+    } catch (error) {
+        
+    }
+
+})
+// Ruta para verificar el código 2FA
+router.post('/2fa/verify', (req, res) => {
+
+    try {
+        const codigo = { 
+            0 :req.body.valor0,
+            1:req.body.valor1,
+            2:req.body.valor2,
+            3:req.body.valor3,
+            4:req.body.valor4,
+            5:req.body.valor5
+        } 
+
+        console.log(codigo)
+    } catch (error) {
+        
+    }
+  //const { token } = req.body;
+
+  // Verificar el código ingresado por el usuario
+//   const verified = speakeasy.totp.verify({
+//     secret: userSecret,
+//     encoding: 'base32',
+//     token: token,
+//   });
+
+//   if (verified) {
+//     res.json({ message: '2FA verificado correctamente' });
+//   } else {
+//     res.status(400).json({ message: 'Código 2FA inválido' });
+//   }
+});
+
+
 
 export default router;

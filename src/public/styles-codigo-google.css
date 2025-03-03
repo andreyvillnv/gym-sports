@@ -1,0 +1,54 @@
+.codigoGoogle{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+  
+    width: 395px;
+    height: 275px;
+    background-color: white;
+    border-radius: 8px;   
+    margin-bottom: 14px;
+    padding: 25px;
+    margin-top: 150px;  
+    text-align: center;  
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    
+}
+input{
+    width: 295px;
+    border: none;
+    text-align: center;
+
+}
+input:focus{
+    outline: none;
+    border: none; 
+}
+button{
+    padding: 6px;
+    width: 100px;
+    border-radius: 8px;
+    border: 1px, solid, #17a14ce5;
+    color:#17a14ce5;
+    font-weight: bold;
+    background-color: #ffff;
+}
+
+.activar{
+    text-decoration: none;
+    padding: 4px;
+    width: 100px;
+    border-radius: 8px;
+    color: #E31C25;
+    font-weight: bold;
+    border: 1px, solid, #E31C25;
+    background-color: #ffff;
+}

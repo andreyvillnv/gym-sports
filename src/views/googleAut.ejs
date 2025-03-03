@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="stylesheet" href="/styles-generales.css">
+    <link rel="stylesheet" href="/styles-codigo-google.css">
+    <title>Document</title>
+</head>
+<body>
+    <main>
+        <div class="barra-superior">
+            <h2>Google Authenticator</h2>
+        </div>
+
+        <section class="container">            
+                <form action="/activarSevicioGoogleAut" method="post" class="codigoGoogle">
+                    <h3>Código generado</h3>
+                    <input type="text" readonly value="<%-secret%>" id="secret" name="codigo">
+                    <h4>Dirígete a la aplicación de Google Authenticator y agrégalo</h4>
+                    <button onclick="copiarAlPortapapeles()">Copiar</button>   
+                    <input class="activar"type="submit" value="Activar">              
+                </form> 
+        </section>
+
+        <figure class="logo">
+            <img src="./assets/GYM SPORTS.png" alt="">
+        </figure>
+
+        <%- include("partials/footer")%>
+    </main>
+</body>
+<script>
+    function copiarAlPortapapeles() {
+        // Obtener el input
+        const input = document.getElementById("secret");
+    
+        // Seleccionar el texto dentro del input
+        input.select();
+        input.setSelectionRange(0, 99999); // Para móviles
+    
+        // Copiar al portapapeles
+        navigator.clipboard.writeText(input.value)
+            .then(() => {
+                alert("Texto copiado al portapapeles");
+            })
+            .catch(err => {
+                console.error("Error al copiar: ", err);
+            });
+    }
+</script>
+</html>
