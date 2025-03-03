@@ -1,12 +1,13 @@
 
 
 export function verificarAutenticacion(req, res, next) {
+    console.log(req.session.usuario)
     if (req.session.usuario) {
-        // ✅ Usuario autenticado, permitir acceso
+        // Usuario autenticado, permitir acceso
         return next();
     }
-    // ❌ Usuario no autenticado, redirigir al login
-    res.redirect('/login');
+    //  Usuario no autenticado, redirigir al login
+    res.redirect('/');
 }
 
 

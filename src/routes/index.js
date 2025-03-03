@@ -1,16 +1,18 @@
 import { query, Router } from "express";
 import session from 'express-session';
 import {cifrar, descifrar} from '../cifrado.js'
-import { citaNutricion, agregarRutina, perfil, dataPerfil, citaFisio, citaPerfilNutricion, cambioCitaNutricion, nuevoRegistro, credencilaes} from "../querys-sql.js";
+import { citaNutricion,idUsuario, agregarRutina, perfil, dataPerfil, citaFisio, citaPerfilNutricion, cambioCitaNutricion, nuevoRegistro, credencilales, intentos, agregarIntentos, bloqueoCuenta} from "../querys-sql.js";
 import { usuarioID } from "../id-usuario.js";
+import { verificarAutenticacion } from "../authMiddleware.js";
 const router = Router();
 
 
-router.get("/", (req, res) =>res.render("login.ejs"))  
+router.get("/", (req, res) =>res.render("login.ejs", { error: "" }))  
 
 
-router.get('/nutricion', (req, res) => {
-    res.render('nutricion.ejs'); 
+router.get('/nutricion', verificarAutenticacion, (req, res) => {
+
+    res.render('nutricion.ejs', { usuario: req.session.usuario }); 
 });
 
 router.post('/registrarNuevo', async (req, res) => {
@@ -28,14 +30,20 @@ router.post('/registrarNuevo', async (req, res) => {
             altura: req.body.altura,
             genero: req.body.genero
           };
-          await nuevoRegistro(data);
-          await usuarioID(data.correo); 
+         const validarcorreo = await nuevoRegistro(data);
+         if (validarcorreo){
+            await usuarioID(data.correo); 
+            res.render('index.ejs')
+         } else if (!validarcorreo){
+            res.render('registro.ejs', { error: "El correo ya está en uso" });
+         }
+          
           
          
     } catch (error) {
         
     }
-    res.render('index.ejs')
+  
     
 });
 
@@ -46,23 +54,67 @@ router.post('/login', async (req, res) => {
             correo: req.body.correo,
             pass: req.body.pass
         }
-       // console.log("data ", data)
-        const rows = await credencilaes(data.correo)
-        //console.log("pass ", rows.pass)
+        if(data.correo==='' || data.pass==='' ){
+            res.render('login.ejs', { error:'Los campos no pueden estar vacios.'}) 
+            return
+        }
+        const cliente = await bloqueoCuenta(data.correo)
+        console.log(cliente)
+
+        if (cliente[0].bloqueo && new Date(cliente[0].bloqueo) > new Date()) {
+            const tiempoRestante = Math.ceil((new Date(cliente[0].bloqueo) - new Date()) / 60000);
+            console.log(`Cuenta bloqueada. Intenta nuevamente en ${tiempoRestante} minutos.`)
+            res.render('login.ejs', { error:`Cuenta bloqueada. Intenta nuevamente en ${tiempoRestante} minutos.`})            
+            return ;
+        }
+     
+
+        const rows = await credencilales(data.correo)       
         const descifrado = await descifrar(data.pass, rows.pass)
-       // console.log(descifrado)
+       
         if (descifrado) {
-            res.render('index.ejs');              
+            const id_usuario = await idUsuario(data.correo)
+            console.log("id user= ",id_usuario)            
+            await intentos(data.correo)
+            req.session.usuario = id_usuario.idcliente
+            res.render('index.ejs');  
+            return            
         } else {
+            //const intentos =0
+            if(cliente[0].intentos >= 3){
+                const nuevosIntentos = 0
+            }else{
+                const nuevosIntentos = cliente[0].intentos + 1;
+            }
+            
+
+            let bloqueoTiempo = null;
+            if (nuevosIntentos >= 3) {
+                bloqueoTiempo = new Date(Date.now() + 60 * 60 * 1000); // Bloqueo por 1 hora
+              
+            }
+
+            const dataIntentos = {
+                intentos: nuevosIntentos,
+                bloqueo: bloqueoTiempo,
+                correo : data.correo
+            }  
+
+            await agregarIntentos(dataIntentos)
+
+            if (nuevosIntentos >= 3) {
+                 res.render('login.ejs', { error: 'Has superado el límite de intentos. Intenta nuevamente en 1 hora.'});
+            }
             res.render('login.ejs', { error: "Correo o contraseña incorrectos" });
         }
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error en el servidor" });
+        console.log(error)
+        res.render('login.ejs', { error: "El correo no existe" });
     }    
 });
 
 router.get('/registro', async (req, res) => {
-    res.render("registro.ejs")
+    res.render("registro.ejs", { error: "" })
     // try {
     //     const data = {
     //         user: req.body.correo,
@@ -86,11 +138,11 @@ router.get('/registro', async (req, res) => {
     // }
     
 });
-router.get('/fisioterapia', (req, res) => {
-    res.render('fisioterapia.ejs'); 
+router.get('/fisioterapia',verificarAutenticacion,  (req, res) => {
+    res.render('fisioterapia.ejs', { usuario: req.session.usuario }); 
 });
-router.get('/matricula', (req, res) => {
-    res.render('planes-matricula.ejs'); 
+router.get('/matricula',verificarAutenticacion, (req, res) => {
+    res.render('planes-matricula.ejs', { usuario: req.session.usuario }); 
 });
 
 // router.get('/perfil', async (req, res) => {
@@ -105,29 +157,31 @@ router.get('/matricula', (req, res) => {
    
 // });
 
-router.get('/perfil', async (req, res) => {
+router.get('/perfil',verificarAutenticacion, async (req, res) => {
     try {
-
-        const rows = await dataPerfil();  // Obtener datos del perfil
+        const id = req.session.usuario
+        const rows = await dataPerfil(id);  // Obtener datos del perfil
         const citasNutricion = await citaPerfilNutricion();  // Obtener citas de nutrición
         
         console.log(rows);
         console.log("fecha ",citasNutricion);
 
-        if (!rows.length) {
-            return res.status(404).send("Perfil no encontrado");
-        }
+        // if (!rows.length) {
+        //     return res.status(404).send("Perfil no encontrado");
+        // }
         const fecha = citasNutricion[0].fecha.toISOString().split("T")[0];
+        const fechaNac = rows.fechaNac.toISOString().split("T")[0];
         const hora = citasNutricion[0].fecha.toTimeString().split(" ")[0];
         const cita = fecha + ' a las ' + hora 
         // Si no hay citas de nutrición, asignar un valor vacío o mensaje
         const citaNutri = citasNutricion.length > 0 ? cita : "Sin cita asignada";
         
-        res.render('perfil.ejs', { 
-            nombre: rows[0].nombre + ' ' + rows[0].apellidos,
-            fecha: rows[0].fechaNac,
-            estatura: rows[0].altura,
-            peso: rows[0].peso,
+        res.render('perfil.ejs', {
+            usuario: req.session.usuario,
+            nombre: rows.nombre + ' ' + rows.apellidos,
+            fecha: fechaNac,
+            estatura: rows.altura,
+            peso: rows.peso,
             citaNutri: citaNutri  
         });
 
