@@ -32,9 +32,8 @@
     text-decoration: none;
 }
 
-
 .cTarjetas{
-    margin-top: 150px;
+    margin-top: 50px;
 
     display: flex;
     flex-direction: column;

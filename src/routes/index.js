@@ -1,7 +1,7 @@
 import { query, Router } from "express";
 import session from 'express-session';
 import {cifrar, descifrar} from '../cifrado.js'
-import {codigoGoogleAut, verificarGoogleAut, citaNutricion,idUsuario, agregarRutina, perfil, dataPerfil, citaFisio, citaPerfilNutricion, cambioCitaNutricion, nuevoRegistro, credencilales, intentos, agregarIntentos, bloqueoCuenta} from "../querys-sql.js";
+import {cambiarPass, comprobarPass, codigoUsuarioGoogleAut, codigoGoogleAut, verificarGoogleAut, citaNutricion,idUsuario, agregarRutina, perfil, dataPerfil, citaFisio, citaPerfilNutricion, cambioCitaNutricion, nuevoRegistro, credencilales, intentos, agregarIntentos, bloqueoCuenta} from "../querys-sql.js";
 import { usuarioID } from "../id-usuario.js";
 import { verificarAutenticacion } from "../authMiddleware.js";
 import speakeasy from 'speakeasy'
@@ -11,6 +11,7 @@ const router = Router();
 
 router.get("/", (req, res) =>res.render("login.ejs", { error: "" }))  
 
+router.get("/login", (req, res) =>res.render("login.ejs", { error: "" }))  
 
 router.get('/nutricion', verificarAutenticacion, (req, res) => {
 
@@ -49,13 +50,24 @@ router.post('/registrarNuevo', async (req, res) => {
     
 });
 
+router.get('/logout', (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            return res.send('Error al cerrar sesión');
+        }
+        res.redirect('/login'); // Redirigir al login después de cerrar sesión
+    });
+})
+
 router.post('/login', async (req, res) => {
     
     try {
+
         const data = {
             correo: req.body.correo,
             pass: req.body.pass
         }
+
         if(data.correo==='' || data.pass==='' ){
             res.render('login.ejs', { error:'Los campos no pueden estar vacios.'}) 
             return
@@ -69,20 +81,20 @@ router.post('/login', async (req, res) => {
             res.render('login.ejs', { error:`Cuenta bloqueada. Intenta nuevamente en ${tiempoRestante} minutos.`})            
             return ;
         }
-     
 
         const rows = await credencilales(data.correo)       
         const descifrado = await descifrar(data.pass, rows.pass)
        
         if (descifrado) {
             const id_usuario = await idUsuario(data.correo)
-            console.log("id user= ",id_usuario)            
+            //console.log("id user= ",id_usuario)            
             await intentos(data.correo)
             req.session.usuario = id_usuario.idcliente
+            //Verifica si tiene autenticación en 2 pasos de google aut.
             const estado = await verificarGoogleAut(id_usuario.idcliente)
             console.log("google ", estado)
             if(estado){
-                res.render('ingreso-2fa.ejs',{error: ''})
+                res.render('ingreso-2fa.ejs',{error: '', usuario: req.session.usuario })
                 return
                // console.log("entrando")
             }else{
@@ -91,32 +103,22 @@ router.post('/login', async (req, res) => {
             }
           
         } else {
-            //const intentos =0
-            if(cliente[0].intentos >= 3){
-                const nuevosIntentos = 0
-            }else{
-                const nuevosIntentos = cliente[0].intentos + 1;
-            }
-            
-
+            const nuevosIntentos = cliente[0].intentos + 1;
             let bloqueoTiempo = null;
             if (nuevosIntentos >= 3) {
-                bloqueoTiempo = new Date(Date.now() + 60 * 60 * 1000); // Bloqueo por 1 hora
-              
-            }
-
-            const dataIntentos = {
-                intentos: nuevosIntentos,
-                bloqueo: bloqueoTiempo,
-                correo : data.correo
-            }  
-
-            await agregarIntentos(dataIntentos)
-
-            if (nuevosIntentos >= 3) {
-                 res.render('login.ejs', { error: 'Has superado el límite de intentos. Intenta nuevamente en 1 hora.'});
-            }
+                bloqueoTiempo = new Date(Date.now() + 60 * 60 * 1000);// Bloqueo por 1 hora            
+                const dataIntentos = {
+                    intentos: nuevosIntentos,
+                    bloqueo: bloqueoTiempo,
+                    correo : data.correo
+                } 
+                console.log('data intentos', dataIntentos)
+                await agregarIntentos(dataIntentos)
+                res.render('login.ejs', { error: 'Has superado el límite de intentos. Intenta nuevamente en 1 hora.'});
+                return
+           }
             res.render('login.ejs', { error: "Correo o contraseña incorrectos" });
+            return 
         }
     } catch (error) {
         console.log(error)
@@ -126,47 +128,47 @@ router.post('/login', async (req, res) => {
 
 router.get('/registro', async (req, res) => {
     res.render("registro.ejs", { error: "" })
-    // try {
-    //     const data = {
-    //         user: req.body.correo,
-    //         pass: req.body.pass
-    //     }
-      
-    //     const rows = await perfil(data)
-    //     console.log(rows)
-    //     if (rows.length > 0) {
-            
-    //         const id = rows[0].id;
-    //         res.render('index.ejs', {id}); 
-         
-       
-    //     } else {
-    //         res.status(401).json({ success: false, message: "Credenciales incorrectas" });
-    //     }
-      
-    // } catch (error) {
-        
-    // }
     
 });
+
+router.get('/cambioContrasena', async (req, res) => {
+    res.render("cambiar-contrasena.ejs", { error: "" })
+});
+router.post('/cambiar', async(req, res)=>{
+    try {
+        const data = {
+            correo: req.body.correo,
+            pass: req.body.pass
+        }
+        const id = await idUsuario(data.correo)
+        const passAntiguo = await comprobarPass(id.idcliente)
+        const pass = await descifrar(data.pass, passAntiguo[0][0].pass)     
+        if (pass){
+           res.render("cambiar-contrasena.ejs", { error: "No se puede la contraseña anterior" })
+        }
+        else{
+            const pass_ = await cifrar(data.pass)
+            const newPass = {
+                pass:  pass_ ,
+                idcliente : id.idcliente
+            }            
+            await cambiarPass(newPass)
+            res.render("login.ejs", { error: "Contraseña cambiada. Inicia sesión" })           
+        }
+        
+    } catch (error) {
+        console.log("error en /cambiar ", error)
+        res.render("cambiar-contrasena.ejs", { error: "Se a producido un error. El correo ingresado no existe." })       
+    }
+
+})
 router.get('/fisioterapia',verificarAutenticacion,  (req, res) => {
     res.render('fisioterapia.ejs', { usuario: req.session.usuario }); 
 });
+
 router.get('/matricula',verificarAutenticacion, (req, res) => {
     res.render('planes-matricula.ejs', { usuario: req.session.usuario }); 
 });
-
-// router.get('/perfil', async (req, res) => {
-//     try {
-//         const rows = await dataPerfil()
-//         console.log(rows)
-//         res.render('perfil.ejs', {nombre: rows[0].nombre +' '+ rows[0].apellidos, fecha: rows[0].fechaNac, estatura: rows[0].altura, peso : rows[0].peso }); 
-//     } catch (error) {
-        
-//     }
-
-   
-// });
 
 router.get('/perfil',verificarAutenticacion, async (req, res) => {
     try {
@@ -203,8 +205,6 @@ router.get('/perfil',verificarAutenticacion, async (req, res) => {
     }
 });
 
-
-
 router.get('/cambiarCitaNutri', verificarAutenticacion,(req,res)=>{
     try {
         res.render('cambiar-cita-nutricion.ejs', { usuario: req.session.usuario });
@@ -238,14 +238,13 @@ router.post('/cambioCitaNutricion', verificarAutenticacion, async(req,res)=>{
     res.render('cita-nutricion.ejs', {usuario: req.session.usuario, fecha : data.fecha, hora: data.hora});
 
 })
-router.get('/home', verificarAutenticacion,(req, res) => {
-    res.render('index.ejs', { usuario: req.session.usuario }); 
+router.get('/home', verificarAutenticacion, (req, res) => {
+     res.render('index.ejs', { usuario: req.session.usuario }); 
 });
 
 router.get('/entrenamientosPesas', verificarAutenticacion, (req, res) => {
     res.render('entrenamientosPesas.ejs', { usuario: req.session.usuario }); 
 });
-
 
 router.get('/bajarPeso', verificarAutenticacion,(req, res) => {
     res.render('bajarPeso.ejs', { usuario: req.session.usuario }); 
@@ -318,7 +317,7 @@ router.post('rutina-3-bajar-peso',verificarAutenticacion, async(req, res,)=>{
 //Google Authenticator
 
 // Ruta para generar el secreto activarGoogleAut
-router.get('/activarGoogleAut', async (req, res) => {
+router.get('/activarGoogleAut', verificarAutenticacion, async (req, res) => {
     try {
         const estado = await verificarGoogleAut(req.session.usuario)
         if(estado){
@@ -353,16 +352,13 @@ router.get('/activarGoogleAut', async (req, res) => {
         let codigo = null
         const secret = speakeasy.generateSecret({ length: 20 });
         codigo = secret.base32; // Guardar el secreto
-        //await codigoGoogleAut(req.session.usuario);
-        
-    
+        await codigoGoogleAut(req.session.usuario, codigo);      
         res.render('googleAut.ejs', { secret: codigo }); 
     } catch (error) {
         
     }
     // Enviar el secreto al frontend
 });
-
 
 router.post('/activarSevicioGoogleAut',verificarAutenticacion, async (req, res)=> {
     try {
@@ -403,38 +399,36 @@ router.post('/activarSevicioGoogleAut',verificarAutenticacion, async (req, res)=
 
 })
 // Ruta para verificar el código 2FA
-router.post('/2fa/verify', (req, res) => {
+router.post('/2fa/verify',verificarAutenticacion, async (req, res) => {
 
-    try {
-        const codigo = { 
-            0 :req.body.valor0,
-            1:req.body.valor1,
-            2:req.body.valor2,
-            3:req.body.valor3,
-            4:req.body.valor4,
-            5:req.body.valor5
-        } 
+    try {     
+           const codigo =  [
+            req.body.valor0,
+            req.body.valor1,
+            req.body.valor2,
+            req.body.valor3,
+            req.body.valor4,
+            req.body.valor5
+        ]
+        const token = Number(codigo.join(''))
+       
 
-        console.log(codigo)
+        const codigoUsario = await codigoUsuarioGoogleAut(req.session.usuario)
+        console.log('Codigo',codigoUsario[0][0].googleauthen)
+        const verified = speakeasy.totp.verify({
+            secret: codigoUsario[0][0].googleauthen,
+            encoding: 'base32',
+            token: token,
+        });
+        console.log('Codigo, verificado', codigoUsario, verified)
+        if (verified) {
+            res.redirect('/home');
+        } else {
+            res.render('ingreso-2fa.ejs', { usuario: req.session.usuario, error : "Código no válido" });;
+        }
     } catch (error) {
         
     }
-  //const { token } = req.body;
-
-  // Verificar el código ingresado por el usuario
-//   const verified = speakeasy.totp.verify({
-//     secret: userSecret,
-//     encoding: 'base32',
-//     token: token,
-//   });
-
-//   if (verified) {
-//     res.json({ message: '2FA verificado correctamente' });
-//   } else {
-//     res.status(400).json({ message: 'Código 2FA inválido' });
-//   }
 });
-
-
 
 export default router;

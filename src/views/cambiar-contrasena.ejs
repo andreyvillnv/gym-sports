@@ -5,33 +5,170 @@
    
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="/styles-generales.css">
-    <link rel="stylesheet" href="/styles-login.css">
+    <link rel="stylesheet" href="/styles-cambio-contrasena.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>Document</title>
 </head>
+
 <body>
     <main>
         <div class="barra-superior">
-            <h1>Restablecer contraseña</h1>
+            <h1>Cambiar contraseña</h1>
         </div>
         <section class="container">
 
-            <form action="/login" method="post">
-                <label for="correo">Ingresa el correo</label>
-                <input type="email" id="correo" name="correo">
+            <form id="registroForm" action="/cambiar" method="POST">
 
-                <label for="pass">Ingresa la contraseña</label>
-                <input type="password" id="pass" name="pass">
-                <a href="/cambioContrasena">¿Olvidó su contraseña?</a>
-                <input class="boton-iniciar" type="submit" value="Iniciar">
-                <a href="/registro">Registrarse</a>
-            </form>
-            
+                <label for="correo">Correo:</label>
+                <input type="email" id="correo" name="correo" required >
+    
+                <div class="password-container">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="pass" required >
+                    <span id="toggle-password" onclick="togglePassword()">
+                      <i class="fas fa-eye"></i> <!-- Ícono de ojo abierto -->
+                    </span>                    
+                </div>
+                <span id="passwordMessage" class="error"></span>     
+
+                <div class="password-container">
+                    <label for="confirmPasswordRepit">Confirmar Contraseña:</label>
+                    <input type="password" id="confirmPasswordRepit" name="confirmPassword" required >
+                    <span id="toggle-password-repit" onclick="togglePasswordRepit()">
+                        <i class="fas fa-eye"></i> <!-- Ícono de ojo abierto -->
+                    </span>                    
+                </div> 
+                <span id="confirmPasswordMessage" class="error"></span>
+                      
+                <button class="boton-registrar"type="submit">Cambiar</button>
+                <a href="/">Ir al login</a>
+            </form>       
+
        </section>
         <figure class="logo">
             <img src="./assets/GYM SPORTS.png" alt="">
-        </figure>
-
-  
+        </figure>  
     </main>
 </body>
+<div id="errorModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="cerrarModal()">&times;</span>
+        <p><%-error%> </p>
+    </div>
+</div>
+
+<script>
+    // Pasar la variable de EJS a JavaScript
+    var error = "<%= error ? error : '' %>";
+
+    // Mostrar el modal si hay un error
+    if (error.trim() !== "") {
+        document.getElementById("errorModal").style.display = "block";
+    }
+
+    // Función para cerrar el modal
+    function cerrarModal() {
+        document.getElementById("errorModal").style.display = "none";
+    }
+
+    // Cerrar el modal si se hace clic fuera de él
+    window.onclick = function(event) {
+        var modal = document.getElementById("errorModal");
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
+<script>
+
+
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirmPasswordRepit");
+    const passwordMessage = document.getElementById("passwordMessage");
+    const confirmPasswordMessage = document.getElementById("confirmPasswordMessage");
+
+    // Validación de la contraseña
+    passwordInput.addEventListener("input", function () {
+        const password = passwordInput.value;
+        const regex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,12}$/;
+
+        if (regex.test(password)) {
+            passwordMessage.textContent = "Contraseña válida ✔";
+            passwordMessage.className = "valid";
+        } else {
+            passwordMessage.textContent = "Debe tener 8-12 caracteres, una mayúscula y un número.";
+            passwordMessage.className = "error";
+        }
+        validatePasswords(); // Verifica si coinciden
+    });
+
+    // Validación de coincidencia de contraseñas
+    confirmPasswordInput.addEventListener("input", validatePasswords);
+
+    function validatePasswords() {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+
+        if (confirmPassword === "") {
+            confirmPasswordMessage.textContent = "";
+        } else if (password === confirmPassword) {
+            confirmPasswordMessage.textContent = "Las contraseñas coinciden ✔";
+            confirmPasswordMessage.className = "valid";
+        } else {
+            confirmPasswordMessage.textContent = "Las contraseñas no coinciden ❌";
+            confirmPasswordMessage.className = "error";
+        }
+    }
+
+    // Validación antes de enviar el formulario
+    document.getElementById("registroForm").addEventListener("submit", function (event) {
+        const password = passwordInput.value;
+        const confirmPassword = confirmPasswordInput.value;
+        const regex = /^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,12}$/;
+
+        if (!regex.test(password)) {
+            alert("La contraseña no cumple con los requisitos.");
+            event.preventDefault();
+        } else if (password !== confirmPassword) {
+            alert("Las contraseñas no coinciden.");
+            event.preventDefault();
+        }
+    });
+    
+    
+     // Visualización de contraseña  
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const toggleIcon = document.querySelector('#toggle-password i');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye'); // Quita el ícono de ojo abierto
+            toggleIcon.classList.add('fa-eye-slash'); // Agrega el ícono de ojo tachado
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash'); // Quita el ícono de ojo tachado
+            toggleIcon.classList.add('fa-eye'); // Agrega el ícono de ojo abierto
+        }
+    }
+
+ // Visualización de contraseña  repetida
+    function  togglePasswordRepit(){
+        const passwordInput = document.getElementById('confirmPasswordRepit');
+        const toggleIcon = document.querySelector('#toggle-password-repit i');
+
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye'); // Quita el ícono de ojo abierto
+            toggleIcon.classList.add('fa-eye-slash'); // Agrega el ícono de ojo tachado
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash'); // Quita el ícono de ojo tachado
+            toggleIcon.classList.add('fa-eye'); // Agrega el ícono de ojo abierto
+        }
+    }
+
+</script>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </html>

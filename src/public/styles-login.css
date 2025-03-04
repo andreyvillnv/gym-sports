@@ -47,7 +47,7 @@
 form{
     display: flex;
     flex-direction: column;
-    height: 324px;
+    height: 274px;
     width: 323px;
     border: 1px, solid, #757575;
     border-radius: 8px;
@@ -72,6 +72,7 @@ input:focus {
     box-shadow: none; /* Opcional: elimina cualquier sombra */
 }
 label{
+    color:white;
     font-size: 16px;
     margin-bottom: 2px;
 }

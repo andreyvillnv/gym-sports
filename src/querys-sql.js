@@ -200,7 +200,6 @@ export async function agregarIntentos(dataIntentos) {
     
 }
 
-
 export async function verificarGoogleAut(id) {
     try {
         const connect = await abrirConexion()
@@ -223,3 +222,40 @@ export async function codigoGoogleAut(id, codigo) {
     }
     
 }
+
+export async function codigoUsuarioGoogleAut(id) {
+    try {
+        const connect = await abrirConexion()
+        const codigo = await connect.query('select googleauthen from googleaut where idcliente = ?',[id])
+        await connect.end()
+        return codigo
+    } catch (error) {
+        console.log("Error en codigoUsuarioGoogleAut", error)
+    }
+    
+}
+
+export async function comprobarPass(id) {
+    try {
+        const connect = await abrirConexion()
+        const pass = await connect.query('select pass from contrasenascliente where idcliente = ?',[id])
+        await connect.end()
+        return pass
+    } catch (error) {
+        console.log('Error en comprobarPass ', error)
+    }
+    
+}
+
+export async function cambiarPass(data) {
+    try {
+        const connect = await abrirConexion()
+        await connect.query("update cliente set pass = ? where idcliente = ?", [data.pass, data.idcliente])
+        await connect.query("update contrasenascliente set pass = ? where idcliente = ?", [data.pass, data.idcliente])
+        await connect.end()
+    } catch (error) {
+        console.log('Error en cambiarPass ', error)
+    } 
+}
+
+//$2b$10$S0xhQ0oT96sU0yzZwE9Uf.IPGglAIPqASTq9xv2Hucaukoucf83oq

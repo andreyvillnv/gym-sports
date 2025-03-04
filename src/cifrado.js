@@ -7,6 +7,12 @@ export async function cifrar(text){
 }
 
 export async function descifrar(text, cifrado) {
-    const decipher = await bcrypt.compare(text, cifrado);
-    return decipher    
+    try {
+        const decipher = await bcrypt.compare(text, cifrado);
+        return decipher 
+    } catch (error) {
+        console.log("error en decifrar", error)
+        
+    }
+   
 }

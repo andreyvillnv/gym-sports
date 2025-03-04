@@ -48,7 +48,27 @@
     
     padding: auto;
 }
+.btnCerrar{
+    text-decoration: none;
+    text-align: center;
+    width: 84px;
+    height: 52px;
+    background-color:  white;
+    margin-bottom: 8px;
+    border-radius: 8px;  
+    padding: auto;
+    border: 2px, solid, #E31C25;
+    background-color:#E31C25 ;
+    color: white;
+    font-weight: bold;
+}
 
+.btnCerrar:hover{
+    border: 2px, solid, #E31C25;
+    color: #E31C25;
+    font-weight: bold;
+    background-color: white;
+}
 .btnCambiar{
     border: 2px, solid, #17a14ce5;
     color: #17a14ce5;
