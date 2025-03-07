@@ -1,23 +1,20 @@
-import {config} from "dotenv"
-import mysql from 'mysql2/promise'
+import { config } from "dotenv";
+import mysql from "mysql2/promise";
 
-config()
+config();
 
- export async function abrirConexion() {
+export async function abrirConexion() {
   try {
     const connection = await mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: 'admin09',
-      database: 'gym_sports',
+      host: "localhost",
+      user: "root",
+      password: "admin09",
+      database: "gym_sports",
     });
-  
-    console.log('Conexión exitosa a la base de datos');
+
+    console.log("Conexión exitosa a la base de datos");
     return connection;
   } catch (error) {
-    console.log(error)
-    
+    console.log(error);
   }
-
 }
-
