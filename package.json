@@ -4,9 +4,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "dev" : "node --watch src/index.js",
+    "dev" : "node --env-file src/.env --watch src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/index.js"
+    "start": "node  --env-file src/.env  src/index.js"
   },
   "keywords": [],
   "author": "",

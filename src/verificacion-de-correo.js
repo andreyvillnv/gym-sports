@@ -126,9 +126,9 @@
 
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
+//import dotenv from "dotenv";
 
-dotenv.config({ path: "./src/.env" });
+//dotenv.config({ path: "./src/.env" });
 
 // Configuración del transporter
 const transporter = nodemailer.createTransport({
