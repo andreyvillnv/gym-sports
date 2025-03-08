@@ -41,10 +41,6 @@ router.get("/", (req, res) => res.render("login.ejs", { error: "" }));
 
 router.get("/login", (req, res) => res.render("login.ejs", { error: "" }));
 
-router.get("/nutricion", verificarAutenticacion, (req, res) => {
-  res.render("nutricion.ejs", { usuario: req.session.usuario });
-});
-
 router.post("/registrarNuevo", async (req, res) => {
   try {
     const pass = await cifrar(req.body.pass);
@@ -298,6 +294,10 @@ router.get("/perfil", verificarAutenticacion, async (req, res) => {
     res.status(500).send("Error interno del servidor");
   }
 });
+
+router.get("/nutricion", verificarAutenticacion, (req, res) => {
+    res.render("nutricion.ejs", { usuario: req.session.usuario });
+  });
 
 router.get("/cambiarCitaNutri", verificarAutenticacion, (req, res) => {
   try {

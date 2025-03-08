@@ -30,7 +30,7 @@ console.log(dir_name);
 app.use(express.static(join(dir_name, "public")));
 
 //app.get('/', (req, res) => res.render('index.ejs'))
-app.listen(process.env.PORT || 3000);
+app.listen(process.env.PORT || 3002);
 console.log(
-  `Server is  listening on port  http://localhost:${process.env.PORT || 3000}`
+  `Server is  listening on port  http://localhost:${process.env.PORT || 3002}`
 );
