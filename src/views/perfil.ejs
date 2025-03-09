@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-   
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="/styles-generales.css">
     <link rel="stylesheet" href="/styles-perfil.css">
     <title>Document</title>
 </head>
+
 <body>
     <main>
         <div class="barra-superior">
@@ -17,7 +19,7 @@
             <section class="section-datos-persolanes">
                 <div class="datos-personales">
                     <p>Nombre: <%-nombre%> </p>
-                    <p>Fecha de nacimento: <%-fecha%>  </p>
+                    <p>Fecha de nacimento: <%-fecha%> </p>
                     <p>Estatura: <%-estatura%></p>
                     <p>Peso: <%-peso%></p>
                 </div>
@@ -26,34 +28,41 @@
                 </div>
             </section>
 
-            <section class="googleAut">            
-                    <p>Autentifiación de Google Authenticator</p>
-                    <div class="botones">
-                        <a  class="btnCambiar" href="/activarGoogleAut">Activar</a>
-                        <a class="btneliminar" href="">Desactivar</a>
-                    </div>
-               
-                
+            <section class="autentificacion">
+                <p>Autentificación en dos factores</p>
+                <div class="botones">
+                    <!-- <a  class="btnCambiar" href="/activarGoogleAut">Activar</a> -->
+                    <a onclick="activarAut()" class="btnCambiar" href="javascript:void(0)">Activar</a>
+                    <a class="btneliminar" href="">Desactivar</a>
+                </div>
+            </section>
+
+            <section class="tarjetaPago">
+                <p>Tarjetas</p>
+                <div class="botones">
+                    <a onclick="agregarTarjeta()" class="btnCambiar" href="javascript:void(0)">Agregar</a>
+                    <a class="btneliminar" href="">Eliminar</a>
+                </div>
             </section>
 
             <section class="rutinas">
                 <p>Rutina actual</p>
                 <div class="botones">
-                    <a  class="btnCambiar" href="">Cambiar</a>
+                    <a class="btnCambiar" href="">Cambiar</a>
                     <a class="btneliminar" href="">Eliminar</a>
                 </div>
             </section>
-        
+
             <section class="citas-nutricion">
                 <div>
                     <p>Proxima cita con nutrición: </p>
                     <p><%-citaNutri%></p>
                 </div>
-       
+
                 <div class="botones">
-                    <a href="/cambiarCitaNutri"  class="btnCambiar" href="">Cambiar</a>
+                    <a href="/cambiarCitaNutri" class="btnCambiar" href="">Cambiar</a>
                     <a class="btneliminar" href="">Eliminar</a>
-                </div>     
+                </div>
 
             </section>
 
@@ -62,7 +71,7 @@
                     <p>Proxima cita con fisioterapia: </p>
 
                 </div>
-              
+
                 <div class="botones">
                     <a class="btnCambiar" href="">Cambiar</a>
                     <a class="btneliminar" href="">Eliminar</a>
@@ -73,36 +82,155 @@
         </section>
         <%- include("partials/footer")%>
     </main>
-    
-<div id="errorModal" class="modal">
-    <div class="modal-content">
-        <span class="close-btn" onclick="cerrarModal()">&times;</span>
-        <p> <%-error%> </p>
+
+    <div id="errorModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            <p> <%-error%> </p>
+        </div>
     </div>
-</div>
 
-<script>
-    // Pasar la variable de EJS a JavaScript
-    var error = "<%= error ? error : '' %>";
+<!-- Modal para selecionar la verificación en dos pasos -->
+    <div id="aut-activar-modal" class="modal">
+        <div class="modal-aut">
+            <form id="activarSevicioGoogleAut" class="codigoGoogle">
+                <span class="close-btn" onclick="cerrarModal()">&times;</span>
+                <a id="activarGoogleAut" href="javascript:void(0)">Activar con Google Authenticator</a>
+                <a href="">Activar con el correo electrónico</a>
+                <a href="">Activar con el número de celular</a>
+                <div id="response"></div>
+            </form>
 
-    // Mostrar el modal si hay un error
-    if (error.trim() !== "") {
-        document.getElementById("errorModal").style.display = "block";
-    }
+        </div>
+    </div>
 
-    // Función para cerrar el modal
-    function cerrarModal() {
-        document.getElementById("errorModal").style.display = "none";
-    }
+    <div id="aut-desactivar-modal" class="modal">
+        <div class="modal-desact"></div>
+    </div>
+<!-- Script para el mostrar errores en el modal errorModal -->
+    <script>
+        // Pasar la variable de EJS a JavaScript
+        let error = "<%= error ? error : '' %>";
 
-    // Cerrar el modal si se hace clic fuera de él
-    window.onclick = function(event) {
-        var modal = document.getElementById("errorModal");
-        if (event.target === modal) {
-            modal.style.display = "none";
+        // Mostrar el modal si hay un error
+        if (error.trim() !== "") {
+            document.getElementById("errorModal").style.display = "block";
         }
-    }
-</script>
+
+        // Función para cerrar el modal
+        function cerrarModal() {
+            document.getElementById("errorModal").style.display = "none";
+        }
+
+        // Cerrar el modal si se hace clic fuera de él
+        window.onclick = function (event) {
+            let modal = document.getElementById("errorModal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+<!-- Script para cerrar el modal  de activar verificación en 2 pasos -->
+    <script>
+
+        function activarAut() {
+            //e.preventDefault();
+            document.getElementById("aut-activar-modal").style.display = "block";
+        }
+        function cerrarModal() {
+            document.getElementById('response').innerText = ''
+            document.getElementById("aut-activar-modal").style.display = "none";
+        }
+        window.onclick = function (event) {
+            let modal = document.getElementById("aut-activar-modal");
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        }
+
+    </script>
+<!-- Ajax para selecionar la verificación en dos pasos -->
+    <script>
+        document.getElementById('activarGoogleAut').addEventListener('click', function () {
+            fetch('/activarGoogleAut')
+                .then(response => {
+                    console.log(response)
+                    if (!response.ok) {
+                        throw new Error('Error en la solicitud');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.message === "activa") {
+                        document.getElementById('response').innerHTML = `
+                        <p>La autentificación de google ya está activada</p>`;
+                    } else {
+                        document.getElementById('response').innerHTML = `
+                        <section class="container">
+                           
+                                <h3>Código generado</h3>
+                                <input type="text" readonly value='${data.message}' id="secret" name="codigo">
+                                <h4>Dirígete a la aplicación de Google Authenticator y agrégalo</h4>
+                                <button onclick="copiarAlPortapapeles()">Copiar</button>   
+                                <input class="activar"type="submit" value="Activar">              
+                            
+                        </section>
+
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('response').innerHTML = 'Hubo un error al obtener los datos.';
+                });
+        })
+    </script>
+<!-- Ajax para activar la verificación de Google -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.getElementById('activarSevicioGoogleAut').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const codigo = document.getElementById('secret').value;
+
+                fetch('/activarSevicioGoogleAut', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ codigo: codigo })
+                }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la activación');
+                    }
+                    return response.json();
+                })
+                    .then(data => {
+                        document.getElementById('response').innerHTML = `<p>${data.message}</p>`;
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('response').innerHTML = '<p>Hubo un error al activar el código.</p>';
+                    });
+            });
+        });
+    </script>
+<!--script para copiar al portapapeles -->
+    <script>
+        function copiarAlPortapapeles() {
+            const input = document.getElementById("secret");
+            input.select();
+            input.setSelectionRange(0, 99999); // Para móviles
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(input.value)
+                .then(() => {
+                    alert("Texto copiado al portapapeles");
+                })
+                .catch(err => {
+                    console.error("Error al copiar: ", err);
+                });
+        }
+    </script>
+
+
 </body>
 
 </html>

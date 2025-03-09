@@ -152,7 +152,7 @@ export async function enviarCorreoVerificacion(email) {
         const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
         // Construye la URL de verificación
-        const urlVerificacion = `http://localhost:3000/verificar/${token}`;
+        const urlVerificacion = `http://localhost:${process.env.PORT}/verificar/${token}`;
         console.log('URL de verificación:', urlVerificacion);
 
         // Configura las opciones del correo

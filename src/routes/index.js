@@ -75,6 +75,7 @@ router.post("/registrarNuevo", async (req, res) => {
 router.get("/verificar/:token", async (req, res) => {
   try {
     const { token } = req.params;
+    console.log("jwt", process.env.JWT_SECRET);
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     console.log("correo verificación", req.params);
     console.log("decoded", decoded);
@@ -296,8 +297,8 @@ router.get("/perfil", verificarAutenticacion, async (req, res) => {
 });
 
 router.get("/nutricion", verificarAutenticacion, (req, res) => {
-    res.render("nutricion.ejs", { usuario: req.session.usuario });
-  });
+  res.render("nutricion.ejs", { usuario: req.session.usuario });
+});
 
 router.get("/cambiarCitaNutri", verificarAutenticacion, (req, res) => {
   try {
@@ -423,45 +424,23 @@ router.post("rutina-3-bajar-peso", verificarAutenticacion, async (req, res) => {
 //Google Authenticator
 
 // Ruta para generar el secreto activarGoogleAut
-router.get(
- "/activarGoogleAut", 
- verificarAutenticacion, 
- async (req, res) => {
+router.get("/activarGoogleAut", verificarAutenticacion, async (req, res) => {
   try {
     const estado = await verificarGoogleAut(req.session.usuario);
     if (estado) {
-      const id = req.session.usuario;
-      const rows = await dataPerfil(id); // Obtener datos del perfil
-      const citasNutricion = await citaPerfilNutricion(); // Obtener citas de nutrición
-
-      console.log(rows);
-      console.log("fecha ", citasNutricion);
-
-      // if (!rows.length) {
-      //     return res.status(404).send("Perfil no encontrado");
-      // }
-      const fecha = citasNutricion[0].fecha.toISOString().split("T")[0];
-      const fechaNac = rows.fechaNac.toISOString().split("T")[0];
-      const hora = citasNutricion[0].fecha.toTimeString().split(" ")[0];
-      const cita = fecha + " a las " + hora;
-      // Si no hay citas de nutrición, asignar un valor vacío o mensaje
-      const citaNutri = citasNutricion.length > 0 ? cita : "Sin cita asignada";
-
-      res.render("perfil.ejs", {
-        usuario: req.session.usuario,
-        nombre: rows.nombre + " " + rows.apellidos,
-        fecha: fechaNac,
-        estatura: rows.altura,
-        peso: rows.peso,
-        citaNutri: citaNutri,
-        error: "La autenticación de Google ya está activada",
-      });
+      const data = {
+        message: "activa",
+      };
+      res.json(data);
+    } else {
+      let codigo = null;
+      const secret = speakeasy.generateSecret({ length: 20 });
+      codigo = secret.base32; // Guardar el secreto
+      const data = {
+        message: codigo,
+      };
+      res.json(data);
     }
-    let codigo = null;
-    const secret = speakeasy.generateSecret({ length: 20 });
-    codigo = secret.base32; // Guardar el secreto
-    await codigoGoogleAut(req.session.usuario, codigo);
-    res.render("googleAut.ejs", { secret: codigo });
   } catch (error) {}
   // Enviar el secreto al frontend
 });
@@ -475,33 +454,17 @@ router.post(
 
       await codigoGoogleAut(req.session.usuario, codigo);
       console.log("Hecho");
-      const id = req.session.usuario;
-      const rows = await dataPerfil(id); // Obtener datos del perfil
-      const citasNutricion = await citaPerfilNutricion(); // Obtener citas de nutrición
+      // const id = req.session.usuario;
+      const data = {
+        message:
+          "Código activado. Asegúrate de activarlo en la aplicación de Google Authenticator",
+      };
 
-      console.log(rows);
-      console.log("fecha ", citasNutricion);
+      res.status(200).json(data);
 
-      // if (!rows.length) {
-      //     return res.status(404).send("Perfil no encontrado");
-      // }
-      const fecha = citasNutricion[0].fecha.toISOString().split("T")[0];
-      const fechaNac = rows.fechaNac.toISOString().split("T")[0];
-      const hora = citasNutricion[0].fecha.toTimeString().split(" ")[0];
-      const cita = fecha + " a las " + hora;
-      // Si no hay citas de nutrición, asignar un valor vacío o mensaje
-      const citaNutri = citasNutricion.length > 0 ? cita : "Sin cita asignada";
-
-      res.render("perfil.ejs", {
-        usuario: req.session.usuario,
-        nombre: rows.nombre + " " + rows.apellidos,
-        fecha: fechaNac,
-        estatura: rows.altura,
-        peso: rows.peso,
-        citaNutri: citaNutri,
-        error: "",
-      });
-    } catch (error) {}
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error al activar" });
+    }
   }
 );
 // Ruta para verificar el código 2FA
